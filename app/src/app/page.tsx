@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useMessageAccount } from "@/hooks/useMessageAccount";
 import { Loader2, Trash2, Edit3, PlusCircle } from "lucide-react";
+import { WalletButtonClient } from "@/components/WalletButtonClient";
 
 export default function Home() {
   const { connected } = useWallet();
@@ -48,7 +48,7 @@ export default function Home() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center p-8 max-w-2xl mx-auto w-full font-sans">
       <div className="w-full flex justify-end mb-12">
-        <WalletMultiButton className="!bg-zinc-900 hover:!bg-zinc-800 !rounded-full transition-colors" />
+        <WalletButtonClient />
       </div>
 
       <div className="flex flex-col items-center gap-8 w-full">
