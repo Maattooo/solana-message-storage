@@ -5,91 +5,73 @@
  * IDL can be found at `target/idl/hello_anchor.json`.
  */
 export type HelloAnchor = {
-  "address": "GoP9du4fh9D2ohKfUm949N8ChfSZCnuLDYFMP8xBj6BA",
-  "metadata": {
-    "name": "helloAnchor",
-    "version": "0.1.0",
-    "spec": "0.1.0",
-    "description": "Created with Anchor"
-  },
-  "instructions": [
+  address: "GoP9du4fh9D2ohKfUm949N8ChfSZCnuLDYFMP8xBj6BA";
+  metadata: {
+    name: "helloAnchor";
+    version: "0.1.0";
+    spec: "0.1.0";
+    description: "Created with Anchor";
+  };
+  instructions: [
     {
-      "name": "initialize",
-      "discriminator": [
-        175,
-        175,
-        109,
-        31,
-        13,
-        152,
-        155,
-        237
-      ],
-      "accounts": [
+      name: "initialize";
+      discriminator: [175, 175, 109, 31, 13, 152, 155, 237];
+      accounts: [
         {
-          "name": "newAccount",
-          "writable": true,
-          "signer": true
+          name: "newAccount";
+          writable: true;
+          signer: true;
         },
         {
-          "name": "signer",
-          "writable": true,
-          "signer": true
+          name: "signer";
+          writable: true;
+          signer: true;
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
+          name: "systemProgram";
+          address: "11111111111111111111111111111111";
         }
-      ],
-      "args": [
+      ];
+      args: [
         {
-          "name": "data",
-          "type": "u64"
+          name: "data";
+          type: "u64";
         }
-      ]
+      ];
     }
-  ],
-  "accounts": [
+  ];
+  accounts: [
     {
-      "name": "newAccount",
-      "discriminator": [
-        176,
-        95,
-        4,
-        118,
-        91,
-        177,
-        125,
-        232
-      ]
+      name: "newAccount";
+      discriminator: [176, 95, 4, 118, 91, 177, 125, 232];
     }
-  ],
-  "errors": [
+  ];
+  errors: [
     {
-      "code": 6000,
-      "name": "customError",
-      "msg": "Custom error message"
+      code: 6000;
+      name: "customError";
+      msg: "Custom error message";
     }
-  ],
-  "types": [
+  ];
+  types: [
     {
-      "name": "newAccount",
-      "type": {
-        "kind": "struct",
-        "fields": [
+      name: "newAccount";
+      type: {
+        kind: "struct";
+        fields: [
           {
-            "name": "data",
-            "type": "u64"
+            name: "data";
+            type: "u64";
           }
-        ]
-      }
+        ];
+      };
     }
-  ],
-  "constants": [
+  ];
+  constants: [
     {
-      "name": "seed",
-      "type": "string",
-      "value": "\"anchor\""
+      name: "seed";
+      type: "string";
+      value: '"anchor"';
     }
-  ]
+  ];
 };

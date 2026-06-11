@@ -20,8 +20,10 @@ export default function WalletContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // Use devnet for testing
-  const endpoint = useMemo(() => clusterApiUrl("devnet"), []);
+  // Use configured RPC endpoint, falling back to public devnet
+  const endpoint = useMemo(() => {
+    return process.env.NEXT_PUBLIC_RPC_URL || clusterApiUrl("devnet");
+  }, []);
 
   const wallets = useMemo(
     () => [new PhantomWalletAdapter(), new SolflareWalletAdapter()],

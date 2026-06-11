@@ -13,7 +13,7 @@ describe("pda", () => {
 
   const [messagePda, messageBump] = PublicKey.findProgramAddressSync(
     [Buffer.from("message"), wallet.publicKey.toBuffer()],
-    program.programId,
+    program.programId
   );
 
   // CREATE
@@ -26,13 +26,13 @@ describe("pda", () => {
 
     const messageAccount = await program.account.messageAccount.fetch(
       messagePda,
-      "confirmed",
+      "confirmed"
     );
 
     console.log(JSON.stringify(messageAccount, null, 2));
     console.log(
       "Transaction Signature:",
-      `https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana`,
+      `https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana`
     );
   });
 
@@ -46,13 +46,13 @@ describe("pda", () => {
 
     const messageAccount = await program.account.messageAccount.fetch(
       messagePda,
-      "confirmed",
+      "confirmed"
     );
 
     console.log(JSON.stringify(messageAccount, null, 2));
     console.log(
       "Transaction Signature:",
-      `https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana`,
+      `https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana`
     );
   });
 
@@ -65,13 +65,13 @@ describe("pda", () => {
 
     const messageAccount = await program.account.messageAccount.fetchNullable(
       messagePda,
-      "confirmed",
+      "confirmed"
     );
 
     console.log("Expect Null:", JSON.stringify(messageAccount, null, 2));
     console.log(
       "Transaction Signature:",
-      `https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana`,
+      `https://solana.fm/tx/${transactionSignature}?cluster=devnet-solana`
     );
   });
 });
