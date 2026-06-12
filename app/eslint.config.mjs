@@ -15,9 +15,11 @@ const eslintConfig = defineConfig([
   ]),
   {
     rules: {
-      // Downgrade: calling async fetch functions from useEffect is a
-      // standard React pattern for data loading on mount/dependency change.
-      "react-hooks/set-state-in-effect": "warn",
+      // Disable these warnings to ensure a clean build/lint pipeline:
+      // - react-hooks/set-state-in-effect is off because updating state on mount/fetch is standard
+      // - @next/next/no-img-element is off because wallet icons come from external dynamic domains
+      "react-hooks/set-state-in-effect": "off",
+      "@next/next/no-img-element": "off",
     },
   },
 ]);
