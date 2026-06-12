@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import {
   ConnectionProvider,
   WalletProvider,
@@ -20,6 +20,8 @@ export default function WalletContextProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const [autoConnect, setAutoConnect] = useState(false);
+
   // Resolve RPC endpoint: custom URL > env-based cluster > devnet fallback
   const endpoint = useMemo(() => {
     if (process.env.NEXT_PUBLIC_RPC_URL) {
@@ -38,12 +40,30 @@ export default function WalletContextProvider({
     [],
   );
 
+  useEffect(() => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (!isMobile) {
+      // On desktop, auto-connect on refresh is safe and standard
+      setAutoConnect(true);
+    } else {
+      // On mobile, only auto-connect if we are inside a wallet's in-app browser 
+      const win = window as unknown as Record<string, unknown>;
+      const isWalletInjected =
+        typeof window !== "undefined" &&
+        (!!win["solana"] ||
+          !!win["backpack"] ||
+          !!win["solflare"] ||
+          !!win["phantom"]);
+      setAutoConnect(isWalletInjected);
+    }
+  }, []);
+
   return (
     <ConnectionProvider
       endpoint={endpoint}
       config={{ commitment: "confirmed" }}
     >
-      <WalletProvider wallets={wallets} autoConnect={false}>
+      <WalletProvider wallets={wallets} autoConnect={autoConnect}>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
