@@ -72,6 +72,13 @@ export function useMessageAccount() {
 
   // Track the current fetch so we can cancel stale ones
   const fetchIdRef = useRef(0);
+  const lastPublicKeyRef = useRef<PublicKey | null>(null);
+
+  useEffect(() => {
+    if (publicKey) {
+      lastPublicKeyRef.current = publicKey;
+    }
+  }, [publicKey]);
 
   // Derive PDA from the connected wallet's public key
   const pda = useMemo(() => {
@@ -122,6 +129,9 @@ export function useMessageAccount() {
       }
       
       setIsAuthenticated(true);
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(`ssms_authenticated_${publicKey.toBase58()}`, "true");
+      }
     } catch (err) {
       console.error("Authentication failed:", err);
       if (err instanceof Error && (err.message.includes("User rejected") || err.message.includes("Rejected") || err.message.includes("4001"))) {
@@ -173,13 +183,26 @@ export function useMessageAccount() {
       setTxState({ status: "idle" });
       setIsAuthenticated(false);
       setAuthError(null);
+      if (lastPublicKeyRef.current && typeof window !== "undefined") {
+        sessionStorage.removeItem(`ssms_authenticated_${lastPublicKeyRef.current.toBase58()}`);
+        lastPublicKeyRef.current = null;
+      }
     }
   }, [connected, pda, isAuthenticated, fetchAccount]);
 
   // Auto-trigger authentication request on connection
   useEffect(() => {
-    if (connected && publicKey && signMessage && !isAuthenticated && !isAuthenticating && !authError) {
-      handleAuthenticate();
+    if (connected && publicKey && signMessage) {
+      if (typeof window !== "undefined") {
+        const savedAuth = sessionStorage.getItem(`ssms_authenticated_${publicKey.toBase58()}`);
+        if (savedAuth === "true") {
+          setIsAuthenticated(true);
+          return;
+        }
+      }
+      if (!isAuthenticated && !isAuthenticating && !authError) {
+        handleAuthenticate();
+      }
     }
   }, [connected, publicKey, signMessage, isAuthenticated, isAuthenticating, authError, handleAuthenticate]);
 

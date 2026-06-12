@@ -7,9 +7,23 @@ import { Copy, LogOut, ChevronDown, Check } from "lucide-react";
 
 const BackpackIconSvg = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5 rounded-md bg-zinc-950 p-1" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 8C4 5.79086 5.79086 4 8 4H16C18.2091 4 20 5.79086 20 8V18C20 20.2091 18.2091 22 16 22H8C5.79086 22 4 20.2091 4 18V8Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M9 4V7C9 8.65685 10.3431 10 12 10C13.6569 10 15 8.65685 15 7V4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M8 14H16" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M4 8C4 5.79086 5.79086 4 8 4H16C18.2091 4 20 5.79086 20 8V18C20 20.2091 18.2091 22 16 22H8C5.79086 22 4 20.2091 4 18V8Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M9 4V7C9 8.65685 10.3431 10 12 10C13.6569 10 15 8.65685 15 7V4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8 14H16" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+const SolflareIconSvg = () => (
+  <svg viewBox="0 0 24 24" className="w-5 h-5 rounded-md bg-zinc-950 p-1" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2v4M12 18v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M2 12h4M18 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" stroke="white" strokeWidth="2" strokeLinecap="round" />
+    <circle cx="12" cy="12" r="4" stroke="white" strokeWidth="2" fill="none" />
+  </svg>
+);
+
+const MetaMaskIconSvg = () => (
+  <svg viewBox="0 0 24 24" className="w-5 h-5 rounded-md bg-zinc-950 p-1" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2L4 7v10l8 5 8-5V7l-8-5z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M12 22V12M4 7l8 5 8-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
@@ -83,17 +97,29 @@ export function WalletButtonClient() {
   };
 
   // Filter wallets:
-  // On Mobile: show compatible wallets (Phantom, Solflare) by default to allow deep linking redirection
-  // On Desktop: only show actually detected/installed wallets
+  // On Mobile: only show standard injected wallets
+  // On Desktop: show actually installed or loadable wallets
   const displayedWallets = wallets.filter((w) => {
-    const isDetected = w.readyState === "Installed" || w.readyState === "Loadable";
+    const isInstalled = w.readyState === "Installed";
+    const isLoadable = w.readyState === "Loadable";
     if (isMobile) {
-      return isDetected || w.adapter.name === "Phantom" || w.adapter.name === "Solflare";
+      return isInstalled && w.adapter.name !== "Mobile Wallet Adapter" && w.adapter.name !== "Phantom";
     }
-    return isDetected;
+    return isInstalled || isLoadable;
   });
 
-  const hasBackpack = displayedWallets.some((w) => w.adapter.name === "Backpack");
+  const handleSolflareMobileRedirect = () => {
+    const dAppUrl = encodeURIComponent(window.location.href);
+    window.location.href = `https://solflare.com/ul/v1/browse/?url=${dAppUrl}&ref=${dAppUrl}`;
+    setIsOpen(false);
+  };
+
+  const handleMetaMaskMobileRedirect = () => {
+    const rawUrl = window.location.href;
+    const dAppUrlWithoutProtocol = rawUrl.replace(/^https?:\/\//, "");
+    window.location.href = `https://metamask.app.link/dapp/${dAppUrlWithoutProtocol}`;
+    setIsOpen(false);
+  };
 
   const handleBackpackMobileRedirect = () => {
     const dAppUrl = encodeURIComponent(window.location.href);
@@ -175,61 +201,35 @@ export function WalletButtonClient() {
               {connected ? "Switch Wallet" : "Select Solana Wallet"}
             </div>
             <div className="max-h-60 overflow-y-auto space-y-1 pr-1 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
-              {displayedWallets.length === 0 ? (
-                <div className="text-center py-4 px-2 space-y-3">
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
-                    No Solana wallets detected.
-                  </p>
-                  <a
-                    href="https://backpack.app/download"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex w-full items-center justify-center gap-2 px-4 py-2 bg-yellow-400 hover:bg-yellow-300 text-zinc-900 rounded-xl font-semibold text-xs transition-colors shadow-sm cursor-pointer"
-                  >
-                    Install Backpack Wallet
-                  </a>
-                </div>
-              ) : (
-                <>
-                  {displayedWallets.map((w) => {
-                    const isInstalled =
-                      w.readyState === "Installed" || w.readyState === "Loadable";
-                    const isSelected = wallet?.adapter.name === w.adapter.name;
+              {isMobile ? (
+                displayedWallets.length === 0 ? (
+                  <div className="space-y-1">
+                    <button
+                      onClick={handleSolflareMobileRedirect}
+                      className="flex w-full items-center justify-between px-3 py-2 text-sm rounded-xl transition-all cursor-pointer text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <SolflareIconSvg />
+                        <span className="font-medium">Solflare</span>
+                      </div>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
+                        Recommended
+                      </span>
+                    </button>
 
-                    return (
-                      <button
-                        key={w.adapter.name}
-                        onClick={() => handleWalletSelect(w.adapter.name)}
-                        className={`flex w-full items-center justify-between px-3 py-2 text-sm rounded-xl transition-all cursor-pointer ${
-                          isSelected
-                            ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-950 dark:text-zinc-50 font-medium"
-                            : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <img
-                            src={w.adapter.icon}
-                            alt={w.adapter.name}
-                            className="w-5 h-5 rounded-md"
-                          />
-                          <span className="font-medium">{w.adapter.name}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          {isInstalled ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              Detected
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-50 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 border border-zinc-100 dark:border-zinc-800">
-                              Mobile Link
-                            </span>
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                  {isMobile && !hasBackpack && (
+                    <button
+                      onClick={handleMetaMaskMobileRedirect}
+                      className="flex w-full items-center justify-between px-3 py-2 text-sm rounded-xl transition-all cursor-pointer text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <MetaMaskIconSvg />
+                        <span className="font-medium">MetaMask</span>
+                      </div>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
+                        Recommended
+                      </span>
+                    </button>
+
                     <button
                       onClick={handleBackpackMobileRedirect}
                       className="flex w-full items-center justify-between px-3 py-2 text-sm rounded-xl transition-all cursor-pointer text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
@@ -238,14 +238,103 @@ export function WalletButtonClient() {
                         <BackpackIconSvg />
                         <span className="font-medium">Backpack</span>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-50 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 border border-zinc-100 dark:border-zinc-800">
-                          Mobile Link
-                        </span>
-                      </div>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
+                        Recommended
+                      </span>
                     </button>
-                  )}
-                </>
+                  </div>
+                ) : (
+                  <>
+                    {displayedWallets.map((w) => {
+                      const isSelected = wallet?.adapter.name === w.adapter.name;
+                      return (
+                        <button
+                          key={w.adapter.name}
+                          onClick={() => handleWalletSelect(w.adapter.name)}
+                          className={`flex w-full items-center justify-between px-3 py-2 text-sm rounded-xl transition-all cursor-pointer ${isSelected
+                              ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-950 dark:text-zinc-50 font-medium"
+                              : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                            }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <img
+                              src={w.adapter.icon}
+                              alt={w.adapter.name}
+                              className="w-5 h-5 rounded-md"
+                            />
+                            <span className="font-medium">{w.adapter.name}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              Detected
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </>
+                )
+              ) : (
+                displayedWallets.length === 0 ? (
+                  <div className="text-center py-4 px-2 space-y-3">
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                      No Solana wallets detected.
+                    </p>
+                    <a
+                      href="https://backpack.app/download"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex w-full items-center justify-center gap-2 px-4 py-2 bg-yellow-400 hover:bg-yellow-300 text-zinc-900 rounded-xl font-semibold text-xs transition-colors shadow-sm cursor-pointer"
+                    >
+                      Install Backpack Wallet
+                    </a>
+                  </div>
+                ) : (
+                  <>
+                    {displayedWallets.map((w) => {
+                      const isInstalled = w.readyState === "Installed";
+                      const isLoadable = w.readyState === "Loadable";
+                      const isSelected = wallet?.adapter.name === w.adapter.name;
+
+                      return (
+                        <button
+                          key={w.adapter.name}
+                          onClick={() => handleWalletSelect(w.adapter.name)}
+                          className={`flex w-full items-center justify-between px-3 py-2 text-sm rounded-xl transition-all cursor-pointer ${isSelected
+                              ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-950 dark:text-zinc-50 font-medium"
+                              : "text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                            }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <img
+                              src={w.adapter.icon}
+                              alt={w.adapter.name}
+                              className="w-5 h-5 rounded-md"
+                            />
+                            <span className="font-medium">{w.adapter.name}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            {isInstalled ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                Detected
+                              </span>
+                            ) : isLoadable ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
+                                Recommended
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-50 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-500 border border-zinc-100 dark:border-zinc-800">
+                                Mobile Link
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </>
+                )
               )}
             </div>
           </div>
