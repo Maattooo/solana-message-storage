@@ -97,7 +97,7 @@ export function WalletButtonClient() {
 
   const handleBackpackMobileRedirect = () => {
     const dAppUrl = encodeURIComponent(window.location.href);
-    window.location.href = `https://backpack.app/open?uri=${dAppUrl}`;
+    window.location.href = `https://backpack.app/ul/browse/?url=${dAppUrl}&ref=${dAppUrl}`;
     setIsOpen(false);
   };
 
