@@ -5,27 +5,9 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { type WalletName } from "@solana/wallet-adapter-base";
 import { Copy, LogOut, ChevronDown, Check } from "lucide-react";
 
-const BackpackIconSvg = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5 rounded-md bg-zinc-950 p-1" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 8C4 5.79086 5.79086 4 8 4H16C18.2091 4 20 5.79086 20 8V18C20 20.2091 18.2091 22 16 22H8C5.79086 22 4 20.2091 4 18V8Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M9 4V7C9 8.65685 10.3431 10 12 10C13.6569 10 15 8.65685 15 7V4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M8 14H16" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const SolflareIconSvg = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5 rounded-md bg-zinc-950 p-1" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2v4M12 18v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M2 12h4M18 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" stroke="white" strokeWidth="2" strokeLinecap="round" />
-    <circle cx="12" cy="12" r="4" stroke="white" strokeWidth="2" fill="none" />
-  </svg>
-);
-
-const MetaMaskIconSvg = () => (
-  <svg viewBox="0 0 24 24" className="w-5 h-5 rounded-md bg-zinc-950 p-1" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2L4 7v10l8 5 8-5V7l-8-5z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M12 22V12M4 7l8 5 8-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
+const SOLFLARE_ICON = "https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/solflare/assets/solflare.svg";
+const METAMASK_ICON = "https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/Metamask-logo.svg";
+const BACKPACK_ICON = "https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/backpack/assets/backpack.svg";
 
 export function WalletButtonClient() {
   const [mounted, setMounted] = useState(false);
@@ -110,20 +92,41 @@ export function WalletButtonClient() {
 
   const handleSolflareMobileRedirect = () => {
     const dAppUrl = encodeURIComponent(window.location.href);
-    window.location.href = `https://solflare.com/ul/v1/browse/?url=${dAppUrl}&ref=${dAppUrl}`;
+    const hasApp = window.confirm(
+      "Do you have the Solflare Wallet app installed on your phone?\n\n- Click OK if you have Solflare installed (this will open the dApp inside Solflare).\n- Click Cancel to download Solflare from the App Store."
+    );
+    if (hasApp) {
+      window.location.href = `https://solflare.com/ul/v1/browse/?url=${dAppUrl}&ref=${dAppUrl}`;
+    } else {
+      window.location.href = "https://solflare.com/download";
+    }
     setIsOpen(false);
   };
 
   const handleMetaMaskMobileRedirect = () => {
     const rawUrl = window.location.href;
     const dAppUrlWithoutProtocol = rawUrl.replace(/^https?:\/\//, "");
-    window.location.href = `https://metamask.app.link/dapp/${dAppUrlWithoutProtocol}`;
+    const hasApp = window.confirm(
+      "Do you have the MetaMask Wallet app installed on your phone?\n\n- Click OK if you have MetaMask installed (this will open the dApp inside MetaMask).\n- Click Cancel to download MetaMask from the App Store."
+    );
+    if (hasApp) {
+      window.location.href = `https://metamask.app.link/dapp/${dAppUrlWithoutProtocol}`;
+    } else {
+      window.location.href = "https://metamask.io/download/";
+    }
     setIsOpen(false);
   };
 
   const handleBackpackMobileRedirect = () => {
     const dAppUrl = encodeURIComponent(window.location.href);
-    window.location.href = `https://backpack.app/ul/browse/?url=${dAppUrl}&ref=${dAppUrl}`;
+    const hasApp = window.confirm(
+      "Do you have the Backpack Wallet app installed on your phone?\n\n- Click OK if you have Backpack installed (this will open the dApp inside Backpack).\n- Click Cancel to download Backpack from the App Store."
+    );
+    if (hasApp) {
+      window.location.href = `https://backpack.app/ul/browse/?url=${dAppUrl}&ref=${dAppUrl}`;
+    } else {
+      window.location.href = "https://backpack.app/download";
+    }
     setIsOpen(false);
   };
 
@@ -209,7 +212,11 @@ export function WalletButtonClient() {
                       className="flex w-full items-center justify-between px-3 py-2 text-sm rounded-xl transition-all cursor-pointer text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
                     >
                       <div className="flex items-center gap-2.5">
-                        <SolflareIconSvg />
+                        <img
+                          src={SOLFLARE_ICON}
+                          alt="Solflare"
+                          className="w-5 h-5 rounded-md object-contain bg-zinc-950 p-1"
+                        />
                         <span className="font-medium">Solflare</span>
                       </div>
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
@@ -222,7 +229,11 @@ export function WalletButtonClient() {
                       className="flex w-full items-center justify-between px-3 py-2 text-sm rounded-xl transition-all cursor-pointer text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
                     >
                       <div className="flex items-center gap-2.5">
-                        <MetaMaskIconSvg />
+                        <img
+                          src={METAMASK_ICON}
+                          alt="MetaMask"
+                          className="w-5 h-5 rounded-md object-contain bg-zinc-950 p-1"
+                        />
                         <span className="font-medium">MetaMask</span>
                       </div>
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">
@@ -235,7 +246,11 @@ export function WalletButtonClient() {
                       className="flex w-full items-center justify-between px-3 py-2 text-sm rounded-xl transition-all cursor-pointer text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900"
                     >
                       <div className="flex items-center gap-2.5">
-                        <BackpackIconSvg />
+                        <img
+                          src={BACKPACK_ICON}
+                          alt="Backpack"
+                          className="w-5 h-5 rounded-md object-contain bg-zinc-950 p-1"
+                        />
                         <span className="font-medium">Backpack</span>
                       </div>
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50">

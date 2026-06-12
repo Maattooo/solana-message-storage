@@ -277,7 +277,7 @@ export default function Home() {
       </div>
 
       <footer className="mt-16 text-xs text-zinc-400 dark:text-zinc-600 font-medium">
-        Made love by Maattooo.
+        Made by Maattooo.
       </footer>
     </main>
   );
