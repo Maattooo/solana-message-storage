@@ -3,7 +3,7 @@ import { type Pda } from "@/types/pda"; // Make sure to place your pda.ts file i
 import IDL from "@/types/pda.json"; // Generate this via `anchor build` and place in lib/
 
 export const PROGRAM_ID = new PublicKey(
-  "GoP9du4fh9D2ohKfUm949N8ChfSZCnuLDYFMP8xBj6BA"
+  "HDuNqTrDwC7FYrgrvRoQiCu2vDtEy4q9cAsxY1mzF22s"
 );
 
 export const getMessagePda = (userPubkey: PublicKey): [PublicKey, number] => {

@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("GoP9du4fh9D2ohKfUm949N8ChfSZCnuLDYFMP8xBj6BA");
+declare_id!("HDuNqTrDwC7FYrgrvRoQiCu2vDtEy4q9cAsxY1mzF22s");
 
 #[program]
 pub mod pda {
@@ -39,7 +39,8 @@ pub struct Create<'info> {
         seeds = [b"message", user.key().as_ref()],
         bump,
         payer = user,
-        space = 8 + 32 + 4 + message.len() + 1
+        space = 8 + 32 + 4 + message.len() + 1,
+        constraint = message.len() <= 280 @ ErrorCode::MessageTooLong
     )]
     pub message_account: Account<'info, MessageAccount>,
     pub system_program: Program<'info, System>,
@@ -58,6 +59,7 @@ pub struct Update<'info> {
         realloc = 8 + 32 + 4 + message.len() + 1,
         realloc::payer = user,
         realloc::zero = true,
+        constraint = message.len() <= 280 @ ErrorCode::MessageTooLong
     )]
     pub message_account: Account<'info, MessageAccount>,
     pub system_program: Program<'info, System>,
@@ -82,4 +84,10 @@ pub struct MessageAccount {
     pub user: Pubkey,
     pub message: String,
     pub bump: u8,
+}
+
+#[error_code]
+pub enum ErrorCode {
+    #[msg("Message length exceeds maximum of 280 characters")]
+    MessageTooLong,
 }

@@ -20,9 +20,17 @@ export default function WalletContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // Use configured RPC endpoint, falling back to public devnet
+  // Resolve RPC endpoint: custom URL > env-based cluster > devnet fallback
   const endpoint = useMemo(() => {
-    return process.env.NEXT_PUBLIC_RPC_URL || clusterApiUrl("devnet");
+    if (process.env.NEXT_PUBLIC_RPC_URL) {
+      return process.env.NEXT_PUBLIC_RPC_URL;
+    }
+    const network =
+      (process.env.NEXT_PUBLIC_SOLANA_NETWORK as
+        | "devnet"
+        | "testnet"
+        | "mainnet-beta") || "devnet";
+    return clusterApiUrl(network);
   }, []);
 
   const wallets = useMemo(
@@ -31,7 +39,10 @@ export default function WalletContextProvider({
   );
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
+    <ConnectionProvider
+      endpoint={endpoint}
+      config={{ commitment: "confirmed" }}
+    >
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>

@@ -1870,6 +1870,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "pda"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "litesvm",
+ "solana-keypair",
+ "solana-message",
+ "solana-signer",
+ "solana-transaction",
+]
+
+[[package]]
 name = "percent-encoding"
 version = "2.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3737,18 +3749,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
-]
-
-[[package]]
-name = "test1"
-version = "0.1.0"
-dependencies = [
- "anchor-lang",
- "litesvm",
- "solana-keypair",
- "solana-message",
- "solana-signer",
- "solana-transaction",
 ]
 
 [[package]]
