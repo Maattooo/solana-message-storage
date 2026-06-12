@@ -19,6 +19,7 @@ export function WalletButtonClient() {
   const [copied, setCopied] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const isUserSelectingRef = useRef(false);
 
   const {
     wallets,
@@ -51,9 +52,10 @@ export function WalletButtonClient() {
     };
   }, []);
 
-  // Automatically connect when a wallet is selected
+  // Automatically connect when a wallet is selected by the user
   useEffect(() => {
-    if (wallet && !connected) {
+    if (wallet && !connected && isUserSelectingRef.current) {
+      isUserSelectingRef.current = false;
       connect().catch((err) => {
         console.error("Wallet connection failed:", err);
       });
@@ -75,6 +77,7 @@ export function WalletButtonClient() {
   };
 
   const handleWalletSelect = (walletName: WalletName) => {
+    isUserSelectingRef.current = true;
     select(walletName);
     setIsOpen(false);
   };
